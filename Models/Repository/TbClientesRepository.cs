@@ -12,7 +12,6 @@ namespace TesteAPI.Models.Repository
     public class TbClientesRepository
     {
         private string stringConnection;
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TbClientesRepository));
         private readonly IConfiguration _configuration;
 
         public TbClientesRepository(IConfiguration configuration)

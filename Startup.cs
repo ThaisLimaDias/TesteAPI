@@ -38,9 +38,13 @@ namespace TesteAPI
             
             // Service
             services.AddTransient<ITesteAPIService,TesteAPIService>();
+            services.AddTransient<ITipoClienteAPIService,TipoClienteAPIService>();
+            services.AddTransient<ISituacaoClienteAPIService,SituacaoClienteAPIService>();
 
             //Repository
             services.AddTransient<TbClientesRepository,TbClientesRepository>();
+            services.AddTransient<TbTipoClienteRepository,TbTipoClienteRepository>();
+            services.AddTransient<TbSituacaoClienteRepository,TbSituacaoClienteRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
