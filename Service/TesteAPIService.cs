@@ -14,7 +14,8 @@ namespace TesteAPI.Service
         //Toda Regra de negocio aqui
         private IConfiguration _configuration;
         private readonly TbClientesRepository _tbClientesRepository;
-       
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TbClientesRepository));
         public TesteAPIService(TbClientesRepository tbClientesRepository)
         {
             _tbClientesRepository = tbClientesRepository;
@@ -36,12 +37,18 @@ namespace TesteAPI.Service
             //VERIFICA SE CPF EXISTE NO BANCO ANTES DE INSERIR
             var cliExis = await _tbClientesRepository.SelectClientes(cliente.CPF);
             if (cliExis.Count()>0)
+            {
+                log.Error("Cliente não pode ser inserido, já existe um CPF Cadastrado!");
                 throw new Exception("Cliente não pode ser inserido, já existe um CPF Cadastrado!");
+            }
 
             var resp = await _tbClientesRepository.CreateClientes(cliente);
             
             if (resp == false)
+            {
+                log.Error("Erro ao inserir Cliente!");
                 throw new Exception("Erro ao inserir Cliente!");
+            }
 
             var cli = await _tbClientesRepository.SelectClientes(cliente.CPF);
             return cli.FirstOrDefault();
@@ -52,14 +59,22 @@ namespace TesteAPI.Service
             //VERIFICA SE CLIENTE EXISTE ANTES DE ATUALIZAR PARA NÃO PERMITIR ALTERAR O CPF PARA UM EXISTENTE
             var cliExis = await _tbClientesRepository.SelectClientes(cliente.CPF);
             if (cliExis.Count()==0)
+            {
+                log.Error("Cliente não pode ser localizado!");
                 throw new Exception("Cliente não pode ser localizado!");
+            }
 
              if (cliExis.Count()>1)
-                throw new Exception("Cliente não pode ser inserido com este CPF!");
+            {
+            log.Error("Cliente não pode ser inserido com este CPF!");
+            throw new Exception("Cliente não pode ser inserido com este CPF!");
+            }
             var resp = await _tbClientesRepository.UpdateClientes(cliente);
             if (resp == false)
+             {
+                log.Error("Erro ao atualizar Cliente!");
                 throw new Exception("Erro ao atualizar Cliente!");
-
+             }
             var cli = await _tbClientesRepository.SelectClientes(cliente.CPF);
             return cli.FirstOrDefault();
         }
@@ -67,16 +82,25 @@ namespace TesteAPI.Service
         public async Task<bool> DeleteCliente(string cpf)
         {
             if (cpf==null || cpf=="")
+            {
+                log.Error("O CPF deve ser fornecido para a exclusão!");
                 throw new Exception("O CPF deve ser fornecido para a exclusão!");
+            }
 
             var cliExis = await _tbClientesRepository.SelectClientes(cpf);
             if (cliExis == null || cliExis.Count()==0)
+            {
+                log.Error("Cliente não localizado!");
                 throw new Exception("Cliente não localizado!");
+            }
 
             var resp = await _tbClientesRepository.DeleteClientes(cpf);        
 
             if (resp == false)
+            {
+                log.Error("Erro ao excluir Cliente!");
                 throw new Exception("Erro ao excluir Cliente!");
+            }
 
             return resp;
         }
